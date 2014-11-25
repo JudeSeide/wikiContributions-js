@@ -1,40 +1,31 @@
-#  WikiContributions II JS
+#  WikiContributions GRISOU
 
-## INF6150 A2013
+## INF6150 A2014
 
 INF6150 Génie logiciel: conduite de projets informatiques
 
-## Équipe VOGG
+## Équipe GLADIATEURS
 
 Membres de l'équipe
 
-* Victor Bitca
-* Olivier Charrier
-* Guillaume Lahaie
-* Guy Francoeur
+* Azzi Youssef
+* Faouzi Zizou
+* Ghania Hachichi
+* Jude Séide
+* Safaa Rochi
+ 
 
 ## Objectifs
 
-* Une application http://ialex.ca/reconnaissance existait. Nous avons eu comme mandat de la modifier pour y ajouter des fonctionnalités.  Au lieu de cela nous avons opté pour une preuve de concept qui aurait pour but premier : régler un problème d'architecture conceptuelle et de vitesse. 
+*
 
 ### Idée
 
-* Il est plus simple et plus rapide d'utiliser les ordinateurs et le navigateur de chaque utilisateur pour faire les calculs et ainsi distribuer la charge au lieu de la garder dans le serveur php.
+*
 
 ### Spécifique
 
-* Refaire l'application original php de wikiContributions (GRISOU) en JavaScript, JQuery (Ajax)
-* Construire un layout visuel éventuellement adaptable.
-* Eliminer les refresh de pages.
-* Ajouter le retreive progressif des articles d'un contributeur.
-* Ajouter le total score des articles qui sont dans la liste (valeur absolut de size diff).
-* Ajouter l'onglet Talk.
-* Ajouter la distance d'édition (Levenshtein distance).
-* Ajouter la recherche avancée.
-* Ajouter des informations sur les contributions:
-  * la grosseur en char de l'article.
-  * la différence en char entre l'article précédent et ma contribution.
-  * Ajouter la date de la contribution dans cet article.
+*
 
 ----------------------------------------------------------
 

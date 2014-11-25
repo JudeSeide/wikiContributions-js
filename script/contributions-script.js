@@ -1,7 +1,11 @@
 // Copyright VOGG 2013
 // Revision ETE 2014 GF
+// Revision AUT 2014 GLADIATEURS
 var oldText, newText, wikiUrlApiPath, wiki, analysisTable, url, user, activeAjaxConnections = 0,
 tabSelected = "Articles";
+
+var contribution_article;
+var contribution_discussion;
 
 function clearScreen() {
   if(tabSelected === "Articles"){
@@ -40,6 +44,7 @@ function loading() {
 
 function callback_Q1(data, continueFlag) {
   var contributions = data.query.usercontribs, totalVal = 0, html_list_articles = "";
+  obtenir_discussions();
   var lastItem = $(".last_item .list_articles_item_pageid").val();
   $(".list_articles_item").removeClass("last_item");
   if(continueFlag){
@@ -49,13 +54,16 @@ function callback_Q1(data, continueFlag) {
     $("#titre").html('Articles which ' + user + ' contributed to with total score: <span id="total_score_contr"></span>');
   }
 
+    contribution_article = contributions;
+
   for (var i = 0; i < contributions.length; ++i) {
     if(lastItem != contributions[i].pageid){
+        
       if(i === contributions.length - 1)
         html_list_articles += '<div class="list_articles_item last_item" onclick="getArticle(this);">';
       else
         html_list_articles += '<div class="list_articles_item" onclick="getArticle(this);">';
-
+        
         html_list_articles += '<div class="list_articles_item_title">' + contributions[i].title + '</div>' +
                               '<span class="list_articles_item_surv"></span>' +
                               '<div class="list_articles_item_size">Size: ' + contributions[i].size + '</div>';
@@ -80,9 +88,13 @@ function callback_Q1(data, continueFlag) {
 function callback_Q2(response) {
   var usercontribs = response.query.usercontribs;
   var html_list_talks = "";
+ 
   if (usercontribs.length > 0) {
     var i;
+    contribution_discussion = usercontribs;
+    
     for (i = 0; i < usercontribs.length; ++i) {
+      
       html_list_talks += '<div class="list_talks_item">' +
                        '<div class="list_talks_item_title">' + usercontribs[i].title + '</div>' +
                        '<div class="list_talks_item_comment">' + usercontribs[i].comment + '</div></div>';
@@ -94,7 +106,7 @@ function callback_Q2(response) {
 }
 
 function callback_Q3(response) {
-    console.log(response);
+    //console.log(response);
   oldText = response.parse.text["*"];
 }
 
@@ -254,10 +266,69 @@ $(document).ready(function () {
   });
 });
 
+function obtenir_discussions(){
+    var tmp = Grisou.WikiHelper.getApiUrlPath()+"?action=query&list=usercontribs&format=json&uclimit=500&ucuser="+ $("#user").val() +"&ucdir=older&ucnamespace=1&ucprop=title%7Ccomment%7Cparsedcomment";
+    
+    doGet(tmp,"Q2");
+}
+
+function calculer_contributions_discussion(title){
+    var titre = +title;//"Discussion:Zend Framework";
+    console.log(contribution_discussion);
+    var nbr_commence = 0;
+    var nbr_response = 0;
+    var i = 0;
+    
+    for(i = 0; i < contribution_discussion.length; i++){
+        
+        if(contribution_discussion[i].title === titre){
+            
+            var temp = contribution_discussion[i].comment;
+            var patt = temp.substring(0, 2);
+            if(patt == "/*"){
+                
+                nbr_commence++;
+            }else{
+                nbr_response++;
+            }
+        }
+    }
+    
+    var resultat = " The author has started " + nbr_commence + " discussions and answered " + nbr_response +"\n";
+    return resultat;
+}
+
+function verifier_si_commenter(title){
+    var resultat = " Participation of author in discussion : NO";
+    var temp = "";    
+    var i = 0;
+    
+    for(i = 0; i< contribution_article.length; i++){
+        
+        if(contribution_article[i].title == title){
+            
+            temp = contribution_article[i].comment;
+            
+            if(temp != ""){               
+                resultat = " Participation of author in discussion : YES";
+            }
+            break;
+        }
+    }
+    
+    contribution_article = {};
+    return resultat;
+}
+
 function getArticle(item) {
   var article = "";
+  
   loading();
   var title = $(item).find(".list_articles_item_title").text();
+    
+  var commentaire = verifier_si_commenter(title);
+  var discussion = calculer_contributions_discussion(title);
+  
   var parentid = $(item).find(".list_articles_item_parentid").val();
   //TODO investigate why grisou.ca return a rev id = 0 as 0 is an error message.
   if (parentid == 0) { parentid = 1 ;}
@@ -291,6 +362,8 @@ function getArticle(item) {
     article += analysisTable;
     if (activeAjaxConnections === 0) {
       $("#article_head").text("Article: '" + title + "' on " + $("#url").val());
+      $("#comment_participation").text(commentaire);
+      $("#number_participation").text(discussion);
       $("#contr_survived").text("The contribution survived: N/A");
       $("#article").html(analysisTable);
       stopLoading();
